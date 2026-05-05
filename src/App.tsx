@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Goals from './pages/Goals';
+import GoalDetail from './pages/GoalDetail';
 
 export default function App() {
   return (
@@ -15,6 +17,12 @@ export default function App() {
         
         {/* Halaman Utama */}
         <Route path="/dashboard" element={<Dashboard />} />
+        
+        {/* Halaman Manajemen Tabungan (Step 1) */}
+        <Route path="/goals" element={<Goals />} />
+        
+        {/* Halaman Detail Tabungan (Step 2) */}
+        <Route path="/goals/:id" element={<GoalDetail />} />
       </Routes>
     </Router>
   );

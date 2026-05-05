@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { LogOut, Wallet, TrendingUp, TrendingDown, Target, AlertCircle, CheckCircle2 } from 'lucide-react';
 import api from '../services/api';
 
@@ -176,11 +176,20 @@ export default function Dashboard() {
 
         {/* 3. GOALS PROGRESS */}
         <div className="pt-4">
-          <div className="flex items-center gap-2 mb-6">
-            <div className="bg-purple-100 p-2 rounded-lg">
-              <Target className="h-6 w-6 text-purple-600" />
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <div className="bg-purple-100 p-2 rounded-lg">
+                <Target className="h-6 w-6 text-purple-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900">Target Tabunganmu</h2>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Target Tabunganmu</h2>
+            
+            <button 
+              onClick={() => navigate('/goals')}
+              className="text-sm font-bold text-purple-700 hover:text-white bg-purple-100 hover:bg-purple-600 px-4 py-2 rounded-lg transition-all duration-300 shadow-sm"
+            >
+              Kelola Tabungan &rarr;
+            </button>
           </div>
           
           {goals.length === 0 ? (
@@ -192,7 +201,7 @@ export default function Dashboard() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {goals.map((goal) => (
-                <div key={goal.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all duration-300 group">
+                <Link to={`/goals/${goal.id}`} key={goal.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all duration-300 group block">
                   <div className="flex justify-between items-start mb-5">
                     <div>
                       <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-700 transition-colors">{goal.name}</h3>
@@ -229,7 +238,7 @@ export default function Dashboard() {
                     </div>
                     <p className="text-right text-xs text-gray-500 font-bold">{goal.progressPercent}% Terkumpul</p>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
