@@ -93,13 +93,23 @@ export default function Dashboard() {
               </div>
               <h1 className="text-xl font-extrabold text-gray-900 tracking-tight">Celengan Pintar</h1>
             </div>
-            <button 
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-            >
-              <LogOut className="h-4 w-4" />
-              Keluar
-            </button>
+            
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={() => navigate('/transactions')}
+                className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-all shadow-sm"
+              >
+                Riwayat Transaksi
+              </button>
+              
+              <button 
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+              >
+                <LogOut className="h-4 w-4" />
+                Keluar
+              </button>
+            </div>
           </div>
         </div>
       </div>

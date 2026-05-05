@@ -4,6 +4,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Goals from './pages/Goals';
 import GoalDetail from './pages/GoalDetail';
+import Transactions from './pages/Transactions';
 
 export default function App() {
   return (
@@ -23,6 +24,9 @@ export default function App() {
         
         {/* Halaman Detail Tabungan (Step 2) */}
         <Route path="/goals/:id" element={<GoalDetail />} />
+        
+        {/* Halaman Riwayat Transaksi (Fase 11) */}
+        <Route path="/transactions" element={<Transactions />} />
       </Routes>
     </Router>
   );
