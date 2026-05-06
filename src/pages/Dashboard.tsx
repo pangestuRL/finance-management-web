@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { LogOut, Wallet, TrendingUp, TrendingDown, Target, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Target, AlertCircle, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 import api from '../services/api';
 
 // Interface untuk Tipe Data
@@ -27,6 +27,10 @@ export default function Dashboard() {
   const [insights, setInsights] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const goalsPerPage = 3;
   
   const navigate = useNavigate();
 
@@ -50,18 +54,14 @@ export default function Dashboard() {
     } catch (err: any) {
       if (err.response?.status === 401 || err.response?.status === 403) {
         // Token kadaluarsa atau tidak valid (Diusir oleh satpam Backend)
-        handleLogout();
+        localStorage.removeItem('token');
+        navigate('/login');
       } else {
         setError('Gagal memuat data dashboard. Pastikan server backend berjalan.');
       }
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
   };
 
   // Alat bantu mempercantik angka jadi format Uang Rupiah Asli
@@ -73,6 +73,10 @@ export default function Dashboard() {
     }).format(angka);
   };
 
+  // Perhitungan Pagination
+  const totalPages = Math.ceil(goals.length / goalsPerPage);
+  const currentGoals = goals.slice((currentPage - 1) * goalsPerPage, currentPage * goalsPerPage);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -83,39 +87,17 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
-      {/* Header Panel (Navbar) */}
-      <div className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+      {/* Header Panel Cukup Tampilkan Judul */}
+      <div className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center gap-3">
-              <div className="bg-blue-600 p-2 rounded-lg">
-                <Wallet className="h-6 w-6 text-white" />
-              </div>
-              <h1 className="text-xl font-extrabold text-gray-900 tracking-tight">Celengan Pintar</h1>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <button 
-                onClick={() => navigate('/transactions')}
-                className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-all shadow-sm"
-              >
-                Riwayat Transaksi
-              </button>
-              
-              <button 
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-              >
-                <LogOut className="h-4 w-4" />
-                Keluar
-              </button>
-            </div>
+          <div className="flex items-center py-5">
+            <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Ikhtisar Keuangan</h1>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8">
-        
+
         {/* Error State */}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
@@ -193,24 +175,39 @@ export default function Dashboard() {
               </div>
               <h2 className="text-2xl font-bold text-gray-900">Target Tabunganmu</h2>
             </div>
-            
-            <button 
-              onClick={() => navigate('/goals')}
-              className="text-sm font-bold text-purple-700 hover:text-white bg-purple-100 hover:bg-purple-600 px-4 py-2 rounded-lg transition-all duration-300 shadow-sm"
-            >
-              Kelola Tabungan &rarr;
-            </button>
+
+            {totalPages > 1 && (
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="p-1.5 rounded-lg bg-white border border-gray-200 text-gray-600 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 disabled:opacity-50 disabled:hover:bg-white disabled:hover:border-gray-200 disabled:hover:text-gray-600 transition-all shadow-sm"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <span className="text-sm font-extrabold text-gray-700 min-w-[3rem] text-center">
+                  {currentPage} <span className="text-gray-400 font-medium">/</span> {totalPages}
+                </span>
+                <button 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="p-1.5 rounded-lg bg-white border border-gray-200 text-gray-600 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 disabled:opacity-50 disabled:hover:bg-white disabled:hover:border-gray-200 disabled:hover:text-gray-600 transition-all shadow-sm"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
+            )}
           </div>
-          
+
           {goals.length === 0 ? (
             <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center flex flex-col items-center justify-center">
               <Target className="h-12 w-12 text-gray-300 mb-3" />
               <p className="text-gray-500 font-medium">Belum ada target tabungan yang dibuat.</p>
-              <p className="text-sm text-gray-400 mt-1">Mulai buat targetmu lewat API Postman, dan lihat hasilnya di sini!</p>
+              <p className="text-sm text-gray-400 mt-1">Mulai buat targetmu, menabung sekarang, kelola dan capai impianmu!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {goals.map((goal) => (
+              {currentGoals.map((goal) => (
                 <Link to={`/goals/${goal.id}`} key={goal.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all duration-300 group block">
                   <div className="flex justify-between items-start mb-5">
                     <div>
@@ -218,11 +215,10 @@ export default function Dashboard() {
                       <p className="text-xs text-gray-500 mt-1 font-medium">Tenggat: {new Date(goal.deadline).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                     </div>
                     {/* Status Badge Dinamis */}
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-sm ${
-                      goal.status === 'Completed' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' :
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-sm ${goal.status === 'Completed' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' :
                       goal.status === 'On Track' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
-                      'bg-rose-100 text-rose-700 border border-rose-200'
-                    }`}>
+                        'bg-rose-100 text-rose-700 border border-rose-200'
+                      }`}>
                       {goal.status === 'Completed' && <CheckCircle2 className="h-3 w-3" />}
                       {goal.status}
                     </span>
@@ -235,11 +231,10 @@ export default function Dashboard() {
                     </div>
                     {/* Progress Bar Container yang Estetik */}
                     <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden shadow-inner">
-                      <div 
-                        className={`h-3 rounded-full transition-all duration-1000 ease-out relative overflow-hidden ${
-                          goal.progressPercent >= 100 ? 'bg-emerald-500' : 
+                      <div
+                        className={`h-3 rounded-full transition-all duration-1000 ease-out relative overflow-hidden ${goal.progressPercent >= 100 ? 'bg-emerald-500' :
                           goal.status === 'Behind' ? 'bg-rose-500' : 'bg-blue-500'
-                        }`}
+                          }`}
                         style={{ width: `${Math.min(goal.progressPercent, 100)}%` }}
                       >
                         {/* Shimmer Effect */}

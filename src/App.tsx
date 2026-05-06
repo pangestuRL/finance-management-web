@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Layout from './components/Layout';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -16,17 +17,20 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         
-        {/* Halaman Utama */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        
-        {/* Halaman Manajemen Tabungan (Step 1) */}
-        <Route path="/goals" element={<Goals />} />
-        
-        {/* Halaman Detail Tabungan (Step 2) */}
-        <Route path="/goals/:id" element={<GoalDetail />} />
-        
-        {/* Halaman Riwayat Transaksi (Fase 11) */}
-        <Route path="/transactions" element={<Transactions />} />
+        {/* Rute Terlindungi dengan Sidebar Global */}
+        <Route element={<Layout />}>
+          {/* Halaman Utama */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          
+          {/* Halaman Manajemen Tabungan (Step 1) */}
+          <Route path="/goals" element={<Goals />} />
+          
+          {/* Halaman Detail Tabungan (Step 2) */}
+          <Route path="/goals/:id" element={<GoalDetail />} />
+          
+          {/* Halaman Riwayat Transaksi (Fase 11) */}
+          <Route path="/transactions" element={<Transactions />} />
+        </Route>
       </Routes>
     </Router>
   );
